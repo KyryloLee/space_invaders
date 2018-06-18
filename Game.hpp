@@ -32,7 +32,7 @@
 # define NUMBER_0F_ENEMIES 10
 # define THIS_IS_BULLETS 42
 # define THIS_IS_ENEMIES 24
-# define CYCLE_FOR_BOSS 2
+# define CYCLE_FOR_BOSS 13
 
 typedef struct s_list{
 	Objects			* obj;

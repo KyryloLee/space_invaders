@@ -13,9 +13,8 @@
 #include "Game.hpp"
 
 Game::Game(){
-	// std::cout << "Please input your name: ";
-	// std::cin >> this->_nameOfPlayer;
-	this->_nameOfPlayer = "player 1";
+	std::cout << "Please input your name: ";
+	std::cin >> this->_nameOfPlayer;
 	this->_bullets = nullptr;
 	this->_enemies = nullptr;
 	this->_score = 0;
@@ -258,7 +257,6 @@ bool		Game::checkShoot(){
 				bullets->obj->setCoord(false, false);
 				player->setCoord(BOX_Y_MAX - 2, BOX_X_MAX / 2);
 				this->_playersLives -= 1;
-				this->delBulletsList();
 				sleep(1);
 			}
 		}
@@ -272,12 +270,12 @@ int			Game::refresh(){
 	mvwprintw(this->_menu, 2, 1, "Score: %05d", this->_score);				// show Score of player
 	mvwprintw(this->_menu, 3, 1, "Lives: %5d", _playersLives);				// show player lives
 	if (this->_score > 0){
-		if (this->_score % CYCLE_FOR_BOSS == 0 && this->_bossLives == 0){				// wake up BOSS
-			this->_bossLives = this->_score / CYCLE_FOR_BOSS * 5;
+		if (this->_score % CYCLE_FOR_BOSS == 0 && this->_bossLives == 0){	// wake up BOSS
+			this->_bossLives = this->_score / CYCLE_FOR_BOSS * 3;
 			this->_boss->setLive(this->_bossLives);
 		}
 	}
-	if (this->_playersLives == 0)
+	if (this->_playersLives == 0)											// if player die do exit
 		return false;
 	if (this->_bossLives > 0){
 		mvwprintw(this->_menu, 4, 1, "BOSS");								// show info about BOSS
