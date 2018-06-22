@@ -6,7 +6,7 @@
 /*   By: klee <marvin@42.fr>                        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/08 16:12:44 by klee              #+#    #+#             */
-/*   Updated: 2018/06/08 16:14:35 by klee             ###   ########.fr       */
+/*   Updated: 2018/06/22 12:54:30 by klee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 # define BOX_Y_MAX 40
 # define MENU_X_MAX 25
 # define MENU_Y_MAX 10
-# define NUMBER_0F_ENEMIES 10
+# define NUMBER_0F_ENEMIES 500
 # define THIS_IS_BULLETS 42
 # define THIS_IS_ENEMIES 24
 # define CYCLE_FOR_BOSS 13
