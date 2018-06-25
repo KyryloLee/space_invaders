@@ -10,44 +10,78 @@
 #                                                                              #
 # **************************************************************************** #
 
-# Name of program.
+# # Name of program.
+# NAME = ft_retro
+
+# # Compaling with flags.
+# CC = clang++
+# FLAGS = -Wall -Wextra -Werror -lncurses
+
+# # Source files.
+# SRC = main.cpp Game.cpp Player.cpp Objects.cpp Bullets.cpp Enemy.cpp Boss.cpp Stars.cpp
+
+# HEADERS = Game.hpp Player.hpp Objects.hpp Bullets.hpp Enemy.hpp Boss.hpp Stars.hpp
+
+# # Object files.
+# OBJ = $(SRCS:.cpp=.o)
+
+# # Header file
+# INCL = 
+
+# # Make project.
+# all: $(NAME) $(OBJ)
+
+# # Compile all needed files.
+# $(NAME): $(OBJ) $(HEADERS)
+# 	$(CC) $(FLAGS) -c $(OBJ) -o $(NAME)
+
+# # %.o : %.cpp $(HEADERS)
+# # 	$(CC)  $(FLAGS) -c -o $@ $<
+
+# # Check modifications.
+# $(OBJ): $(SRC)
+# 	$(CC) $(FLAGS) -c $<
+# # Debuging
+# debug:
+# 	$(CC) -lncurses $(SRC) -g -o $(NAME)
+# # Remove all object files.
+# clean:
+# 	rm -f $(OBJ)
+
+# # Remove created project files.
+# fclean:
+# 	rm -f $(NAME)
+
+# # Re-make project.
+# re: fclean all
+
+
 NAME = ft_retro
+CC	=	clang++
 
-# Compaling with flags.
-CC = g++
-FLAGS = -Wall -Wextra -Werror
+CFLAGS	=	-std=c++98 -Wall -Wextra -Werror -g
 
-# Source files.
-SRC = main.cpp Game.cpp Player.cpp Objects.cpp Bullets.cpp Enemy.cpp Boss.cpp
+HEADERS = Game.hpp Player.hpp Objects.hpp Bullets.hpp Enemy.hpp Boss.hpp Stars.hpp IObjClass.hpp
 
-# Object files.
-OBJ = $(SRC:.cpp=.o)
+SRCS = main.cpp Game.cpp Player.cpp Objects.cpp Bullets.cpp Enemy.cpp Boss.cpp Stars.cpp
 
-# Header file
-INCL = 
 
-# Make project.
-all: $(NAME)
 
-# Compile all needed files.
-$(NAME): $(OBJ)
-	$(CC) $(FLAGS) $(SRC) -c
-	$(CC) $(FLAGS) $(OBJ) -o $(NAME) -lncurses
+OBJ = $(SRCS:.cpp=.o)
 
-# Check modifications.
-$(OBJ): $(SRC)
-	$(CC) $(FLAGS) -c $<
-# Debuging
-debug:
-	$(CC) -lncurses $(SRC) -g -o $(NAME)
-# Remove all object files.
+
+all: $(NAME) $(OBJ)
+
+$(NAME): $(OBJ) $(HEADERS)
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) -lncurses
+
+%.o : %.cpp $(HEADERS)
+	$(CC)  $(CFLAGS) -c -o $@ $<
+
 clean:
 	rm -f $(OBJ)
 
-# Remove created project files.
-fclean:
+fclean: clean
 	rm -f $(NAME)
 
-# Re-make project.
 re: fclean all
-

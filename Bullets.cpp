@@ -12,9 +12,9 @@
 
 #include "Bullets.hpp"
 
-Bullets::Bullets(WINDOW * win, bool direction){
+Bullets::Bullets(WINDOW * win, bool direction, std::string c){
 	this->_curwin = win;
-	this->_character = "|";
+	this->_character = c;
 	this->_direction = direction;
 	this->_yLoc = false;
 	this->_xLoc = false;
@@ -48,6 +48,8 @@ void		Bullets::moveOn(){
 	}
 	else{
 		this->_yLoc += index;
+		wattron(this->_curwin, COLOR_PAIR(6));
 		mvwprintw(this->_curwin, this->_yLoc, this->_xLoc, "%s", this->_character.c_str());
+		wattroff(this->_curwin, COLOR_PAIR(6));
 	}
 }

@@ -18,7 +18,7 @@
 class Bullets : public Objects{
 	
 public:
-	Bullets(WINDOW * win, bool direction);
+	Bullets(WINDOW * win, bool direction, std::string c);
 	Bullets(Objects const & obj);
 	~Bullets();
 	Bullets& operator= (Objects const & obj);

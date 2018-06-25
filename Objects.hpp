@@ -16,19 +16,20 @@
 # include <ncurses.h>
 # include <iostream>
 # include <string>
+# include "IObjClass.hpp"
 
-class Objects{
+class Objects : public IObjClass{
 
 public:
 	Objects();
 	Objects(Objects const & obj);
-	virtual ~Objects();
+	~Objects();
 	Objects& operator= (Objects const & obj);
 	WINDOW * 		getCurwin() const;
 	int				getYLoc() const;
 	int				getXLoc() const;
 	std::string		getCharacter() const;
-	virtual void	moveOn(){};
+	void	moveOn(){};
 	void			setCoord(int y, int x);
 
 protected:

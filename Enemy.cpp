@@ -14,7 +14,7 @@
 
 Enemy::Enemy(WINDOW * win, int live){
 	this->_curwin = win;
-	this->_character = "@";
+	this->_character = "U";
 	this->_live = live;
 	this->_yLoc = 1;
 	this->_xLoc = false;
@@ -47,7 +47,11 @@ void		Enemy::moveOn(){
 	else if (this->_xLoc != false){
 		this->_yLoc += index;
 		if (this->_yLoc > 1)
+		{
+			wattron(this->_curwin, COLOR_PAIR(8));
 			mvwprintw(this->_curwin, this->_yLoc, this->_xLoc, "%s", this->_character.c_str());
+			wattroff(this->_curwin, COLOR_PAIR(8));
+		}
 	}
 }
 

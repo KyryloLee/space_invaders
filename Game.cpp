@@ -13,13 +13,20 @@
 #include "Game.hpp"
 
 Game::Game(){
+
 	std::cout << "Please input your name: ";
 	std::cin >> this->_nameOfPlayer;
+	std::cout << "Please input your mode. 1 - BLUE or 2 - DARK: ";
+	std::cin >> this->_flag;
 	this->_bullets = nullptr;
 	this->_enemies = nullptr;
+	this->_stars = nullptr;
+	this->_player1 = nullptr;
 	this->_score = 0;
 	this->_playersLives = 5;
 	this->_bossLives = 0;
+	this->_index = 4;
+	this->_startAtGame = time(NULL);
 	initscr();
 	cbreak();
 	noecho();
@@ -34,10 +41,27 @@ Game::Game(){
 
 
 	refresh();
-
-	init_pair(1, COLOR_WHITE, COLOR_BLUE);
+	if (_flag > 2 || _flag < 1)
+		_flag = 1;
+	if (_flag == 1)
+	{
+		init_pair(1, COLOR_WHITE, COLOR_BLUE);
+		init_pair(6, COLOR_RED, COLOR_BLUE); //bullets
+		init_pair(7, COLOR_YELLOW, COLOR_BLUE); // boss
+		init_pair(8, COLOR_GREEN, COLOR_BLUE);
+		init_pair(9, COLOR_GREEN, COLOR_BLACK); // enemy
+		wbkgd(this->_win, COLOR_PAIR(1));
+	}
+	else if (_flag == 2)
+	{
+		init_pair(2, COLOR_WHITE, COLOR_BLACK);
+		init_pair(6, COLOR_RED, COLOR_BLACK); //bullets
+		init_pair(7, COLOR_YELLOW, COLOR_BLACK); //boss
+		init_pair(8, COLOR_GREEN, COLOR_BLACK); // enemy
+		init_pair(9, COLOR_GREEN, COLOR_BLACK);
+		wbkgd(this->_win, COLOR_PAIR(2));
+	}	
 	box(this->_win, 0, ' ');
-	wbkgd(this->_win, COLOR_PAIR(1));
 	wrefresh(this->_win);
 	
 	box(this->_menu, 0, 0);
@@ -47,6 +71,12 @@ Game::Game(){
 		Objects * trooper = new Enemy(this->_win, 1);
 		this->addObject(trooper, THIS_IS_ENEMIES);
 	}
+
+	for (int i = 0; i < NUMBER_0F_STARS; i++){
+		Objects * stars = new Stars(this->_win);
+		this->addObject(stars, THIS_IS_STARS);
+	}
+	system("afplay StarWars.mp3&");
 }
 
 Game::Game(Game const & obj){
@@ -57,6 +87,8 @@ Game::~Game(){
 	delete this->_player1;
 	this->delBulletsList();
 	this->delEnemiesList();
+	this->delStarsList();
+	system("pkill afplay");
 	endwin();	
 }
 
@@ -77,17 +109,25 @@ void		Game::NewGame(){
 	int c = 0;
 	int count = 0;
 	while (c != 27){
-		c = wgetch(this->_win);						// take input data from keyboard
+		c = wgetch(this->_win);	
+		if (c == KEY_UP)
+			_index = 1;
+		else if (c == KEY_DOWN)
+			_index = 7;
+		else
+			_index = 4;					// take input data from keyboard
 		pew = this->_player1->getmv(c);				// move player and save bullets what his make
 		if (this->checkShoot() == false)			// check hit
 			return ;
 		this->addObject(pew, THIS_IS_BULLETS);		// add bullets in list of bullets
-		if (count % 5 == 0)
+		if (count % 6 == 0)
 			this->moveEnemies();					// move enemies one time of three
 		this->_player1->display();					// display change of player position
 		this->_boss->moveOn();						// move boss
-		if (count % 3 == 0)
+		if (count % 4 == 0)
 			this->moveBullets();
+		if (count % _index == 0)
+			this->moveStars();
 		if (count % 17 == 0){
 			pew = this->_boss->shoot();
 			this->addObject(pew, THIS_IS_BULLETS);
@@ -110,6 +150,8 @@ void		Game::moveBullets(){
 	}
 }
 
+
+
 void		Game::addObject(Objects * obj, int index){ // add object in t_list
 	t_list * tmp = nullptr;
 	
@@ -119,6 +161,8 @@ void		Game::addObject(Objects * obj, int index){ // add object in t_list
 		tmp = this->_bullets;
 	else if (index == THIS_IS_ENEMIES)
 		tmp = this->_enemies;
+	else if (index == THIS_IS_STARS)
+		tmp = this->_stars;
 
 	t_list * plus = nullptr;
 
@@ -130,6 +174,8 @@ void		Game::addObject(Objects * obj, int index){ // add object in t_list
 			this->_bullets = tmp1;
 		else if (index == THIS_IS_ENEMIES)
 			this->_enemies = tmp1;
+		else if (index == THIS_IS_STARS)
+			this->_stars = tmp1;
 	}
 	else{
 		while(tmp->next != nullptr)
@@ -161,6 +207,25 @@ void		Game::moveEnemies(){
 	}
 }
 
+void Game::moveStars()
+{
+	t_list * tmp = this->_stars;
+	int numbY = 0;
+	int numbX = 0;
+	srand (time(NULL));
+	
+	while (tmp != nullptr){
+		if (tmp->obj->getXLoc() == false){
+			numbX = rand() % (BOX_X_MAX - 3) + 1;
+			numbY = (rand() % 200 + 1) * (-1);
+			tmp->obj->setCoord(numbY, numbX); 			// set random coordinates for stars
+		}
+		else
+			tmp->obj->moveOn();
+		tmp = tmp->next;
+	}
+}
+
 void		Game::delBulletsList(){
 	t_list * tmp;
 
@@ -180,6 +245,18 @@ void		Game::delEnemiesList(){
 	while (this->_enemies != nullptr){
 		tmp = this->_enemies;
 		this->_enemies = this->_enemies->next;
+		delete tmp->obj;
+		delete tmp;
+		tmp = nullptr;
+	}
+}
+
+void		Game::delStarsList(){
+	t_list * tmp;
+	
+	while (this->_stars != nullptr){
+		tmp = this->_stars;
+		this->_stars = this->_stars->next;
 		delete tmp->obj;
 		delete tmp;
 		tmp = nullptr;
@@ -241,6 +318,7 @@ bool		Game::checkShoot(){
 				enemies->obj->setCoord(false, false);
 				player->setCoord(BOX_Y_MAX - 2, BOX_X_MAX / 2);
 				this->_playersLives -= 1;
+				this->_player1->setNumberOfBullets();
 				this->delBulletsList();
 				sleep(1);
 			}
@@ -256,6 +334,7 @@ bool		Game::checkShoot(){
 				mvwprintw(this->_win, bullets->obj->getYLoc(), bullets->obj->getXLoc(), " ");
 				bullets->obj->setCoord(false, false);
 				player->setCoord(BOX_Y_MAX - 2, BOX_X_MAX / 2);
+				this->_player1->setNumberOfBullets();
 				this->_playersLives -= 1;
 				sleep(1);
 			}
@@ -266,24 +345,43 @@ bool		Game::checkShoot(){
 }
 
 int			Game::refresh(){
-	mvwprintw(this->_menu, 1, 1, this->_nameOfPlayer.c_str());				// show name of player
+	mvwprintw(this->_menu, 1, 1, "Name: %s", this->_nameOfPlayer.c_str());				// show name of player
 	mvwprintw(this->_menu, 2, 1, "Score: %05d", this->_score);				// show Score of player
-	mvwprintw(this->_menu, 3, 1, "Lives: %5d", _playersLives);				// show player lives
+	mvwprintw(this->_menu, 3, 1, "Lives: %5d", _playersLives);
+	mvwprintw(this->_menu, 7, 1, "In game: %05d", (time(NULL) - this->_startAtGame));
+	if (this->_player1 != nullptr)
+		mvwprintw(this->_menu, 4, 1, "Bullets: %5d", this->_player1->getNumberOfBullets());
 	if (this->_score > 0){
 		if (this->_score % CYCLE_FOR_BOSS == 0 && this->_bossLives == 0){	// wake up BOSS
 			this->_bossLives = this->_score / CYCLE_FOR_BOSS * 3;
 			this->_boss->setLive(this->_bossLives);
 		}
 	}
-	if (this->_playersLives == 0)											// if player die do exit
-		return false;
+	if (this->_playersLives <= 0){  									// if player die do exit
+		wattron(this->_menu, COLOR_PAIR(9));
+		mvwprintw(this->_menu, 9, 4, "REPLAY  y/n");
+		wattroff(this->_menu, COLOR_PAIR(9));
+		wrefresh(this->_menu);
+		nodelay(this->_win, false);
+		char c = wgetch(this->_win);
+		nodelay(this->_win, true);
+		if (c == 'y')
+		{
+			this->_playersLives = 5;
+			this->_player1->setNumberOfBullets();
+			mvwprintw(this->_menu, 9, 4, "           ");
+			wrefresh(this->_menu);
+		}
+		else if (c == 'n')
+			return false;
+	}
 	if (this->_bossLives > 0){
-		mvwprintw(this->_menu, 4, 1, "BOSS");								// show info about BOSS
-		mvwprintw(this->_menu, 5, 1, "Lives: %5d", this->_bossLives);
+		mvwprintw(this->_menu, 5, 1, "BOSS");								// show info about BOSS
+		mvwprintw(this->_menu, 6, 1, "Lives: %5d", this->_bossLives);
 	}
 	else{
-		mvwprintw(this->_menu, 4, 1, "            ");
-		mvwprintw(this->_menu, 5, 1, "            ", this->_bossLives);
+		mvwprintw(this->_menu, 5, 1, "            ");
+		mvwprintw(this->_menu, 6, 1, "            ", this->_bossLives);
 	}
 	wrefresh(this->_menu);
 	wrefresh(this->_win);

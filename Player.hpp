@@ -16,6 +16,7 @@
 # include <ncurses.h>
 # include <iostream>
 # include <string>
+# include <unistd.h>
 # include "Objects.hpp"
 # include "Bullets.hpp"
 
@@ -34,9 +35,12 @@ public:
 	void		mvright();
 	Bullets *		getmv(int choice);
 	void		display();
-	
+	int			getNumberOfBullets() const;
+	void		setNumberOfBullets();
+
 private:
 	int			_live;
+	int 		_index;
 };
 
 #endif

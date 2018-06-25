@@ -18,6 +18,7 @@ Player::Player(WINDOW * win, int y, int x, std::string c){
 	this->_xLoc = x;
 	this->_character = c;
 	this->_live = 10;
+	this->_index = 20;
 	getmaxyx(this->_curwin, this->_yMax, this->_xMax);
 }
 
@@ -82,15 +83,35 @@ Bullets *		Player::getmv(int choice){
 			mvright();
 			break ;
 		case 32:
-			pew = new Bullets(this->_curwin, true);
-			pew->setCoord(this->_yLoc - 1, this->_xLoc);
+			if (_index > 0)
+			{
+				pew = new Bullets(this->_curwin, true, "'");
+				system("afplay piu.mp3&");
+				pew->setCoord(this->_yLoc - 1, this->_xLoc);
+				_index--;
+			}
 			break ;
 		default:
 			break ;
 	}
+	if (choice == 'R' || choice == 'r')
+	{
+		system("afplay rechange.mp3&");
+		_index = 20;
+	}
+		
 	return pew;
 }
 
 void	Player::display(){
 	mvwprintw(this->_curwin, this->_yLoc, this->_xLoc, "%s", this->_character.c_str());
+}
+
+int		Player::getNumberOfBullets() const{
+	return this->_index;
+}
+
+void	Player::setNumberOfBullets(){
+	this->_index = 20;
+
 }

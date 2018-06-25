@@ -46,7 +46,9 @@ void		Boss::moveOn(){
 		else if (this->_xLoc < 2)
 			index = 1;
 		this->_xLoc += index;
+		wattron(this->_curwin, COLOR_PAIR(7));
 		mvwprintw(this->_curwin, 1, this->_xLoc, this->_character.c_str());
+		wattroff(this->_curwin, COLOR_PAIR(7));
 	}
 }
 
@@ -58,7 +60,7 @@ Bullets * Boss::shoot(){
 	Bullets * pew = nullptr;
 
 	if (this->_live > 0){		
-		pew = new Bullets(this->_curwin, false);
+		pew = new Bullets(this->_curwin, false, "|");
 		pew->setCoord(this->_yLoc + 1, this->_xLoc + 1);
 	}
 	return pew;
